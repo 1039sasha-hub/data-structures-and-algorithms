@@ -140,50 +140,50 @@ class DynamicArray:
 
     def _grow(self) -> None:
         """Увеличить ёмкость в 2 раза и скопировать элементы."""
-    new_capacity = self._capacity * 2
-    new_buffer = [None] * new_capacity
-    for i in range(self._size):
-        new_buffer[i] = self._buffer[i]  # копируем элементы
-        self.copies += 1                  # считаем переносы для метода учёта
-    self._buffer = new_buffer
-    self._capacity = new_capacity
+        new_capacity = self._capacity * 2
+        new_buffer = [None] * new_capacity
+        for i in range(self._size):
+            new_buffer[i] = self._buffer[i]  # копируем элементы
+            self.copies += 1                  # считаем переносы для метода учёта
+        self._buffer = new_buffer
+        self._capacity = new_capacity
 
     def append(self, value) -> None:
         """Добавить элемент в конец. Амортизированная сложность: O(1)."""
-    if self._size == self._capacity:  # буфер полон — растём
-        self._grow()
-    self._buffer[self._size] = value
-    self._size += 1
+        if self._size == self._capacity:  # буфер полон — растём
+            self._grow()
+        self._buffer[self._size] = value
+        self._size += 1
 
     def pop(self):
         """Удалить и вернуть последний элемент. Сложность: O(1)."""
-    if self._size == 0:
-        raise IndexError("pop from empty DynamicArray")
-    self._size -= 1
-    value = self._buffer[self._size]
-    self._buffer[self._size] = None  # очищаем ссылку, чтобы GC собрал объект
-    # Сжатие: только когда заполнено ≤ 1/4, и не ниже INITIAL_CAPACITY
-    if self._size <= self._capacity // 4 and self._capacity > self.INITIAL_CAPACITY:
-        new_capacity = self._capacity // 2
-        new_buffer = [None] * new_capacity
-        for i in range(self._size):
-            new_buffer[i] = self._buffer[i]
-            self.copies += 1
-        self._buffer = new_buffer
-        self._capacity = new_capacity
-    return value
+        if self._size == 0:
+            raise IndexError("pop from empty DynamicArray")
+        self._size -= 1
+        value = self._buffer[self._size]
+        self._buffer[self._size] = None  # очищаем ссылку, чтобы GC собрал объект
+        # Сжатие: только когда заполнено ≤ 1/4, и не ниже INITIAL_CAPACITY
+        if self._size <= self._capacity // 4 and self._capacity > self.INITIAL_CAPACITY:
+            new_capacity = self._capacity // 2
+            new_buffer = [None] * new_capacity
+            for i in range(self._size):
+                new_buffer[i] = self._buffer[i]
+                self.copies += 1
+            self._buffer = new_buffer
+            self._capacity = new_capacity
+        return value
 
     def get(self, index: int):
         """Вернуть элемент по индексу. Сложность: O(1)."""
-    if index < 0 or index >= self._size:
-        raise IndexError(f"index {index} out of range [0, {self._size})")
-    return self._buffer[index]
+        if index < 0 or index >= self._size:
+            raise IndexError(f"index {index} out of range [0, {self._size})")
+        return self._buffer[index]
 
     def set(self, index: int, value) -> None:
         """Записать элемент по индексу. Сложность: O(1)."""
-    if index < 0 or index >= self._size:
-        raise IndexError(f"index {index} out of range [0, {self._size})")
-    self._buffer[index] = value
+        if index < 0 or index >= self._size:
+            raise IndexError(f"index {index} out of range [0, {self._size})")
+        self._buffer[index] = value
 
 
 # ---------------------------------------------------------------------------
@@ -243,51 +243,51 @@ class Deque:
 
     def push_front(self, value) -> None:
         """Добавить элемент в начало. Сложность: O(1)."""
-    new_node = _Node(value)
-    if self._head is None:        # дек пуст
-        self._head = self._tail = new_node
-    else:
-        new_node.next = self._head
-        self._head.prev = new_node
-        self._head = new_node
-    self._size += 1
+        new_node = _Node(value)
+        if self._head is None:        # дек пуст
+            self._head = self._tail = new_node
+        else:
+            new_node.next = self._head
+            self._head.prev = new_node
+            self._head = new_node
+        self._size += 1
 
     def push_back(self, value) -> None:
         """Добавить элемент в конец. Сложность: O(1)."""
-    new_node = _Node(value)
-    if self._tail is None:        # дек пуст
-        self._head = self._tail = new_node
-    else:
-        new_node.prev = self._tail
-        self._tail.next = new_node
-        self._tail = new_node
-    self._size += 1
+        new_node = _Node(value)
+        if self._tail is None:        # дек пуст
+            self._head = self._tail = new_node
+        else:
+            new_node.prev = self._tail
+            self._tail.next = new_node
+            self._tail = new_node
+        self._size += 1
 
     def pop_front(self):
         """Извлечь элемент из начала. Сложность: O(1)."""
-    if self._head is None:
-        raise IndexError("pop_front from empty deque")
-    value = self._head.value
-    self._head = self._head.next
-    if self._head is None:        # дек стал пустым
-        self._tail = None
-    else:
-        self._head.prev = None
-    self._size -= 1
-    return value
+        if self._head is None:
+            raise IndexError("pop_front from empty deque")
+        value = self._head.value
+        self._head = self._head.next
+        if self._head is None:        # дек стал пустым
+            self._tail = None
+        else:
+            self._head.prev = None
+        self._size -= 1
+        return value
 
     def pop_back(self):
         """Извлечь элемент из конца. Сложность: O(1)."""
-    if self._tail is None:
-        raise IndexError("pop_back from empty deque")
-    value = self._tail.value
-    self._tail = self._tail.prev
-    if self._tail is None:        # дек стал пустым
-        self._head = None
-    else:
-        self._tail.next = None
-    self._size -= 1
-    return value
+        if self._tail is None:
+            raise IndexError("pop_back from empty deque")
+        value = self._tail.value
+        self._tail = self._tail.prev
+        if self._tail is None:        # дек стал пустым
+            self._head = None
+        else:
+            self._tail.next = None
+        self._size -= 1
+        return value
 
 
 # ---------------------------------------------------------------------------
